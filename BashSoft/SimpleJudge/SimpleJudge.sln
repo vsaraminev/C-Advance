@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleJudge", "SimpleJudge\SimpleJudge.csproj", "{59D7B3F4-4938-4CB6-8A1C-88BF7ED948DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59D7B3F4-4938-4CB6-8A1C-88BF7ED948DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59D7B3F4-4938-4CB6-8A1C-88BF7ED948DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59D7B3F4-4938-4CB6-8A1C-88BF7ED948DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59D7B3F4-4938-4CB6-8A1C-88BF7ED948DD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {00AA97D1-33F8-4155-B77A-E5EB5A8342C3}
+	EndGlobalSection
+EndGlobal
