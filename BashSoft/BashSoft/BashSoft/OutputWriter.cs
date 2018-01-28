@@ -17,6 +17,7 @@ namespace BashSoft
 
         public static void WriteEmptyLine()
         {
+            Console.WriteLine();
         }
 
         public static void DisplayException(string message)
