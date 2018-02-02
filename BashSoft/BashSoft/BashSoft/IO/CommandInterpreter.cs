@@ -309,7 +309,7 @@
             {
                 if (takeQuantity == "all")
                 {
-                    StudentsRepository.FilterAndTake(courseName, filter);
+                    StudentsRepository.OrderAndTake(courseName, filter);
                 }
                 else
                 {
@@ -319,7 +319,7 @@
 
                     if (hasParsed)
                     {
-                        StudentsRepository.FilterAndTake(courseName, filter, studentsToTake);
+                        StudentsRepository.OrderAndTake(courseName, filter, studentsToTake);
                     }
                     else
                     {
