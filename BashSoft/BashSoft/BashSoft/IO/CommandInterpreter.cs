@@ -1,15 +1,53 @@
-﻿namespace BashSoft
+﻿using System;
+
+namespace BashSoft
 {
     using System.Diagnostics;
+    using System.IO;
 
-    public static class CommandInterpreter
+    public class CommandInterpreter
     {
-        public static void InterpredCommand(string input)
+        private Tester judge;
+        private StudentsRepository repository;
+        private IOManager inputOutputManager;
+
+        public CommandInterpreter(Tester judge, StudentsRepository repository, IOManager inputOutputManager)
         {
-            var data = input.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+            this.judge = judge;
+            this.repository = repository;
+            this.inputOutputManager = inputOutputManager;
+        }
 
-            var command = data[0];
+        public void InterpredCommand(string input)
+        {
+            string[] data = input.Split();
 
+            string command = data[0];
+            
+            try
+            {
+                ParseCommand(input, data, command);
+            }
+            catch (DirectoryNotFoundException dnfe)
+            {
+                OutputWriter.DisplayException(dnfe.Message);
+            }
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                OutputWriter.DisplayException(aoore.Message);
+            }
+            catch (ArgumentException ae)
+            {
+                OutputWriter.DisplayException(ae.Message);
+            }
+            catch (Exception e)
+            {
+                OutputWriter.DisplayException(e.Message);
+            }
+        }
+
+        private void ParseCommand(string input, string[] data, string command)
+        {
             switch (command)
             {
                 case "open":
@@ -28,7 +66,7 @@
                     TryChangePathRelatively(input, data);
                     break;
                 case "cdAbs":
-                    TryChangeAbsolute(input, data);
+                    TryChangePathAbsolute(input, data);
                     break;
                 case "readDb":
                     TryReadDatabaseFromFile(input, data);
@@ -57,13 +95,13 @@
             }
         }
 
-        private static void TryShowWantedDAta(string input, string[] data)
+        private void TryShowWantedDAta(string input, string[] data)
         {
             if (data.Length == 2)
             {
                 string courseName = data[1];
 
-                StudentsRepository.GetAllStudentsFromCourse(courseName);
+                this.repository.GetAllStudentsFromCourse(courseName);
             }
             else if (data.Length == 3)
             {
@@ -71,15 +109,15 @@
 
                 string userName = data[2];
 
-                StudentsRepository.GetStudentScoresFromCourse(courseName, userName);
+                this.repository.GetStudentScoresFromCourse(courseName, userName);
             }
             else
             {
-                DisplayInvalidCommandMessage(input);
+                this.DisplayInvalidCommandMessage(input);
             }
         }
 
-        private static void TryGetHelp(string input, string[] data)
+        private void TryGetHelp(string input, string[] data)
         {
             if (data.Length == 1)
             {
@@ -100,55 +138,52 @@
             }
             else
             {
-                DisplayInvalidCommandMessage(input);
+                this.DisplayInvalidCommandMessage(input);
             }
-            
+
         }
 
-        private static void TryReadDatabaseFromFile(string input, string[] data)
+        private void TryReadDatabaseFromFile(string input, string[] data)
         {
             if (data.Length == 2)
             {
                 string fileName = data[1];
 
-                StudentsRepository.InitializeData(fileName);
+                this.repository.LoadData(fileName);
             }
             else
             {
-                DisplayInvalidCommandMessage(input);
+                this.DisplayInvalidCommandMessage(input);
             }
         }
 
-        private static void TryChangeAbsolute(string input, string[] data)
+        private void TryChangePathAbsolute(string input, string[] data)
         {
             if (data.Length == 2)
             {
                 string absolutePath = data[1];
-
-                IOManager.ChangeCurrentDirectoryAbsolute(absolutePath);
+                this.inputOutputManager.ChangeCurrentDirectoryAbsolute(absolutePath);
             }
             else
             {
-                DisplayInvalidCommandMessage(input);
+                this.DisplayInvalidCommandMessage(input);
             }
         }
 
-        private static void TryChangePathRelatively(string input, string[] data)
+        private void TryChangePathRelatively(string input, string[] data)
         {
             if (data.Length == 2)
             {
                 string relPath = data[1];
-
-                IOManager.ChangeCurrentDirectoryRelative(relPath);
-
+                this.inputOutputManager.ChangeCurrentDirectoryRelative(relPath);
             }
             else
             {
-                DisplayInvalidCommandMessage(input);
+                this.DisplayInvalidCommandMessage(input);
             }
         }
 
-        private static void TryCompareFiles(string input, string[] data)
+        private void TryCompareFiles(string input, string[] data)
         {
             if (data.Length == 3)
             {
@@ -156,19 +191,19 @@
 
                 string secondPath = data[2];
 
-                Tester.CompareContent(firstPath, secondPath);
+                this.judge.CompareContent(firstPath, secondPath);
             }
             else
             {
-                DisplayInvalidCommandMessage(input);
+                this.DisplayInvalidCommandMessage(input);
             }
         }
 
-        private static void TryTraverseFolders(string input, string[] data)
+        private void TryTraverseFolders(string input, string[] data)
         {
             if (data.Length == 1)
             {
-                IOManager.TraverseDirectory(0);
+                this.inputOutputManager.TraverseDirectory(0);
             }
             else if (data.Length == 2)
             {
@@ -178,7 +213,7 @@
 
                 if (hasParsed)
                 {
-                    IOManager.TraverseDirectory(depth);
+                    this.inputOutputManager.TraverseDirectory(depth);
                 }
                 else
                 {
@@ -187,25 +222,25 @@
             }
             else
             {
-                DisplayInvalidCommandMessage(input);
+                this.DisplayInvalidCommandMessage(input);
             }
         }
 
-        private static void TryCreateDirectory(string input, string[] data)
+        private void TryCreateDirectory(string input, string[] data)
         {
             if (data.Length == 2)
             {
                 string folderName = data[1];
 
-                IOManager.CreateDirectoryInCurrentFolder(folderName);
+                this.inputOutputManager.CreateDirectoryInCurrentFolder(folderName);
             }
             else
             {
-                DisplayInvalidCommandMessage(input);
+                this.DisplayInvalidCommandMessage(input);
             }
         }
 
-        private static void TryOpenFile(string input, string[] data)
+        private void TryOpenFile(string input, string[] data)
         {
             if (data.Length == 2)
             {
@@ -224,16 +259,16 @@
             }
             else
             {
-                DisplayInvalidCommandMessage(input);
+                this.DisplayInvalidCommandMessage(input);
             }
         }
 
-        private static void DisplayInvalidCommandMessage(string input)
+        private void DisplayInvalidCommandMessage(string input)
         {
             OutputWriter.DisplayException($"The command '{input}' is invalid");
         }
 
-        private static void TryFilterAndTake(string input, string[] data)
+        private void TryFilterAndTake(string input, string[] data)
         {
             if (data.Length == 5)
             {
@@ -249,17 +284,17 @@
             }
             else
             {
-                DisplayInvalidCommandMessage(input);
+                this.DisplayInvalidCommandMessage(input);
             }
         }
 
-        private static void TryParseParametersForFilterAndTake(string takeCommand, string takeQuantity, string courseName, string filter)
+        private void TryParseParametersForFilterAndTake(string takeCommand, string takeQuantity, string courseName, string filter)
         {
             if (takeCommand == "take")
             {
                 if (takeQuantity == "all")
                 {
-                    StudentsRepository.FilterAndTake(courseName, filter);
+                    this.repository.FilterAndTake(courseName, filter);
                 }
                 else
                 {
@@ -269,7 +304,7 @@
 
                     if (hasParsed)
                     {
-                        StudentsRepository.FilterAndTake(courseName, filter, studentsToTake);
+                        this.repository.FilterAndTake(courseName, filter, studentsToTake);
                     }
                     else
                     {
@@ -283,7 +318,7 @@
             }
         }
 
-        private static void TryOrderAndTake(string input, string[] data)
+        private void TryOrderAndTake(string input, string[] data)
         {
             if (data.Length == 5)
             {
@@ -299,17 +334,17 @@
             }
             else
             {
-                DisplayInvalidCommandMessage(input);
+                this.DisplayInvalidCommandMessage(input);
             }
         }
 
-        private static void TryParseParametersForOrderAndTake(string takeCommand, string takeQuantity, string courseName, string filter)
+        private void TryParseParametersForOrderAndTake(string takeCommand, string takeQuantity, string courseName, string filter)
         {
             if (takeCommand == "take")
             {
                 if (takeQuantity == "all")
                 {
-                    StudentsRepository.OrderAndTake(courseName, filter);
+                    this.repository.OrderAndTake(courseName, filter);
                 }
                 else
                 {
@@ -319,7 +354,7 @@
 
                     if (hasParsed)
                     {
-                        StudentsRepository.OrderAndTake(courseName, filter, studentsToTake);
+                        this.repository.OrderAndTake(courseName, filter, studentsToTake);
                     }
                     else
                     {
@@ -331,6 +366,19 @@
             {
                 OutputWriter.DisplayException(ExceptionMessages.InvalidTakeCommandParameter);
             }
+        }
+
+        private void TryDropDb(string input, string[] data)
+        {
+            if (data.Length != 1)
+            {
+                this.DisplayInvalidCommandMessage(input);
+                return;
+            }
+
+            this.repository.UnloadData();
+
+            OutputWriter.WriteMessageOnNewLine("Database dropped!");
         }
     }
 }

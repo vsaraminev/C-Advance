@@ -6,7 +6,17 @@
     {
         public static void Main()
         {
-            InputReader.StartReadingCommands();
+            Tester tester = new Tester();
+
+            IOManager iOManager = new IOManager();
+
+            StudentsRepository repo = new StudentsRepository(new RepositoryFilter(), new RepositorySorter());
+
+            CommandInterpreter currentdInterpreter = new CommandInterpreter(tester, repo, iOManager);
+
+            InputReader reader = new InputReader(currentdInterpreter);
+
+            reader.StartReadingCommands();
         }
     }
 }
